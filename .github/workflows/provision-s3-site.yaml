@@ -2,8 +2,8 @@ name: Create S3 Static Site
 
 on: 
   issues:
-    type:
-      -opened
+    types:
+      - opened
 
 jobs:
   deploy:
@@ -13,32 +13,40 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up AWS CLI
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5  # ou a versão que você estiver usando
+
+      - name: Configurar AWS CLI
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Extract Bucket Name from Issue
+      - name: Definir nome do bucket com base no título da issue
         run: |
-          export BUCKET_NAME=$(echo "${{ github.event.issue.title }}")
-          echo "Bucket Name: $BUCKET_NAME"
+          BUCKET_NAME="${{ github.event.issue.title }}"
           echo "BUCKET_NAME=$BUCKET_NAME" >> $GITHUB_ENV
+          echo "Bucket Name extraído: $BUCKET_NAME"
 
-      - name: Run Terraform
+      - name: Executar Terraform
+        working-directory: ./terraform/s3-bucket-static
         run: |
-          cd terraform
-          cd s3-bucket-static
           terraform init
           terraform apply -auto-approve -var="bucket_name=${{ env.BUCKET_NAME }}"
 
-      - name: Add comment
-        run: gh issue comment "$NUMBER" --repo "$REPO" --body "$BODY"
+      - name: Instalar GitHub CLI (gh)
+        run: |
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Comentar na issue
+        run: |
+          gh issue comment $NUMBER --repo "$REPO" --body "$BODY"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NUMBER: ${{ github.event.issue.number }}
           REPO: ${{ github.repository }}
-          BODY: >
-            O bucket S3 foi criado com sucesso!
-
+          BODY: "✅ O bucket S3 foi criado com sucesso com o nome \`${{ env.BUCKET_NAME }}\`!"
