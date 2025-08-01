@@ -49,4 +49,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NUMBER: ${{ github.event.issue.number }}
           REPO: ${{ github.repository }}
-          BODY: "✅ O bucket S3 foi criado com sucesso com o nome \`${{ env.BUCKET_NAME }}\`!"
+          BODY: "✅ O bucket S3 foi criado com sucesso com o nome ${{ env.BUCKET_NAME }}!"
