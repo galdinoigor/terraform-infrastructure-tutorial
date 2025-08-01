@@ -32,7 +32,8 @@ resource "aws_s3_bucket_public_access_block" "static_site_bucket" {
 
 resource "aws_s3_bucket_ownership_controls" "static_site_bucket" {
     bucket = aws_s3_bucket.static_site_bucket.id
-    rule = {
+
+    rule {
         object_ownership = "BucketOwnerPreferred"
     }
 }
@@ -44,6 +45,6 @@ resource "aws_s3_bucket_acl" "static_site_bucket" {
     ]
 
     bucket = aws_s3_bucket.static_site_bucket.id
-    acl = "public_read"
+    acl = "public-read"
 }
 
