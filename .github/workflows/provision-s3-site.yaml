@@ -35,7 +35,7 @@ jobs:
         working-directory: ./terraform/s3-bucket-static
         run: |
           terraform init
-          terraform apply -auto-approve -var="bucket-name=${{ env.BUCKET_NAME }}"
+          terraform apply -auto-approve -var="bucket_name=${{ env.BUCKET_NAME }}"
 
       - name: Instalar GitHub CLI (gh)
         run: |
