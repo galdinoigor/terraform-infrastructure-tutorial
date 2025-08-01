@@ -5,6 +5,9 @@ on:
     types:
       - opened
 
+env:
+  TF_LOG: DEBUG
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -35,7 +38,7 @@ jobs:
         working-directory: ./terraform/s3-bucket-static
         run: |
           terraform init
-          terraform apply -auto-approve -var="bucket_name=${{ env.BUCKET_NAME }}"
+          TF_LOG=DEBUG terraform apply -auto-approve -var="bucket_name=${{ env.BUCKET_NAME }}"
 
       - name: Instalar GitHub CLI (gh)
         run: |
